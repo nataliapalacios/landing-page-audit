@@ -11,7 +11,7 @@ Viene en dos formatos que comparten la misma rúbrica (`skill/references/`):
 
 | Formato | Para qué | Costo |
 |---|---|---|
-| **Webapp** (Vercel) | Pegar una URL en el navegador y bajar el reporte `.md`. Sirve para clientes o el equipo. | Vercel Hobby gratis + API de Claude por uso (~US$0.10–0.20 por audit) |
+| **Webapp** (Vercel) | Pegar una URL en el navegador y bajar el reporte `.md`. Sirve para clientes o el equipo. | Vercel Hobby gratis + API de Claude por uso (~US$0.04–0.06 por audit) |
 | **Skill de Claude** (`skill/`) | Correrlo dentro de Claude Code / Claude Desktop. | Incluido en tu plan de Claude |
 
 ## Cómo funciona
@@ -28,8 +28,33 @@ URL ─┬─> /api/extract   fetch server-side + extracción determinística (t
 - Todo lo medible se mide con código; Claude solo juzga sobre esa evidencia y cita el copy real.
 - El system prompt se arma con los mismos archivos de `skill/references/` → si mejorás la rúbrica,
   mejora la webapp y el skill a la vez.
-- Prompt caching sobre la rúbrica: a partir del segundo audit, esa parte del input cuesta ~10%.
 - Nada se guarda: sin base de datos, sin login, sin estado.
+
+## Costos
+
+~75% del costo es el texto que escribe Claude, no el que lee. Por eso las palancas son:
+
+| Palanca | Default | Efecto |
+|---|---|---|
+| Modelo | `claude-sonnet-5-5` | Mitad de precio por token que Opus; la rúbrica fija hace el trabajo pesado |
+| Esfuerzo de razonamiento | `low` | Menos tokens de "pensamiento" antes de escribir |
+| Texto de la página enviado | 15.000 caracteres | Hero + primeros scrolls, donde se decide la conversión |
+| Prompt caching | rúbrica + ejemplo | Esa parte cuesta ~10% en audits seguidos (caché de 5 min) |
+
+Resultado: **~US$0.04–0.06 por audit**. Para máxima calidad: `CLAUDE_MODEL=claude-opus-5-5`,
+`CLAUDE_EFFORT=medium` (~US$0.15).
+
+## Demo pública (portfolio)
+
+La app está pensada para que cualquiera la pruebe sin registrarse:
+
+- **Botón "Ver un reporte de ejemplo"**: muestra la auditoría real de Diffr al instante, sin costo.
+- **Límite por IP** (`RATE_LIMIT_PER_DAY`, default 5/día): frena el abuso casual.
+- **Tope duro de gasto**: en [console.anthropic.com](https://console.anthropic.com) → Settings →
+  Limits, fijá un *spend limit* mensual (ej. US$10 ≈ 200 audits). Mejor aún: creá un workspace
+  aparte solo para esta demo y usá una API key de ese workspace. Si se alcanza el tope, la app
+  devuelve un error y no gasta más.
+- `ACCESS_CODE` queda vacío; usalo solo si querés cerrarla.
 
 ## Deploy en Vercel (5 minutos)
 
@@ -40,8 +65,9 @@ URL ─┬─> /api/extract   fetch server-side + extracción determinística (t
    - `ANTHROPIC_API_KEY` — obligatoria.
    - `PAGESPEED_API_KEY` — recomendada (gratis, ver `.env.example`). Sin ella la cuota pública
      devuelve 429 seguido.
-   - `ACCESS_CODE` — recomendada si la URL va a ser pública, para que nadie más gaste tus créditos.
+   - `ACCESS_CODE` — opcional: cierra la app con un código (no la uses si es una demo pública).
 4. Deploy. Listo.
+5. Si la URL va a ser pública: configurá el spend limit en la consola de Anthropic (ver "Demo pública").
 
 ## Correr local
 

@@ -1,14 +1,15 @@
 // POST { page, pagespeed, reportLanguage } -> reporte Markdown en streaming (Fases 2-4 del skill).
 import Anthropic from "@anthropic-ai/sdk";
 import { systemPrompt } from "../lib/prompt.js";
-import { checkAccess, json } from "../lib/http.js";
+import { checkAccess, json, rateLimit } from "../lib/http.js";
 
 const client = new Anthropic();
-const MODEL = process.env.CLAUDE_MODEL || "claude-opus-5-5";
-const EFFORT = process.env.CLAUDE_EFFORT || "medium";
+// Sonnet + effort low: ~3-4x más barato que Opus para una tarea guiada por rúbrica.
+const MODEL = process.env.CLAUDE_MODEL || "claude-sonnet-5-5";
+const EFFORT = process.env.CLAUDE_EFFORT || "low";
 
 export async function POST(request) {
-  const denied = checkAccess(request);
+  const denied = checkAccess(request) || rateLimit(request);
   if (denied) return denied;
   if (!process.env.ANTHROPIC_API_KEY) {
     return json({ error: "config", message: "Falta ANTHROPIC_API_KEY en las variables de entorno." }, 500);

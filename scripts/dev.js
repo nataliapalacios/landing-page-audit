@@ -26,6 +26,10 @@ createServer(async (req, res) => {
       else res.end();
       return;
     }
+    if (url.pathname.endsWith(".md") && !url.pathname.includes("..")) {
+      const md = await readFile(new URL(`..${url.pathname}`, import.meta.url));
+      return res.writeHead(200, { "content-type": "text/markdown; charset=utf-8" }).end(md);
+    }
     const html = await readFile(new URL("../index.html", import.meta.url));
     res.writeHead(200, { "content-type": "text/html; charset=utf-8" }).end(html);
   } catch (e) {
