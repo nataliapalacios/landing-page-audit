@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Landing Page Audit</title>
+  <meta name="description" content="Auditoría de landing pages: copywriting, UX/conversión, SEO on-page y PageSpeed en un solo reporte con puntaje justificado." />
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+  <style>
+    :root {
+      --bg: #f7f7f5; --surface: #fff; --text: #1d1d1b; --muted: #6b6b66; --border: #e3e3de;
+      --accent: #1f6f50; --accent-text: #fff; --warn-bg: #fff6e0; --warn-border: #f0d48a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #151514; --surface: #1e1e1c; --text: #ececea; --muted: #a0a09a; --border: #33332f;
+        --accent: #4fb98a; --accent-text: #0d1f17; --warn-bg: #2d2615; --warn-border: #6b5520;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
+    h1 { font-size: 1.6rem; margin: 0 0 4px; }
+    .sub { color: var(--muted); margin: 0 0 24px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    form.row { display: flex; gap: 8px; flex-wrap: wrap; }
+    input[type=url], input[type=password], select { flex: 1 1 260px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font: inherit; }
+    select { flex: 0 0 auto; }
+    button { padding: 10px 18px; border: 0; border-radius: 8px; background: var(--accent); color: var(--accent-text); font: inherit; font-weight: 600; cursor: pointer; }
+    button.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); font-weight: 500; }
+    button:disabled { opacity: .5; cursor: default; }
+    .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+    .steps li { color: var(--muted); }
+    .steps li[data-state=run]::before { content: "◌ "; }
+    .steps li[data-state=ok] { color: var(--text); } .steps li[data-state=ok]::before { content: "✓ "; color: var(--accent); }
+    .steps li[data-state=warn]::before { content: "⚠ "; }
+    .steps li[data-state=idle]::before { content: "· "; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-border); }
+    .warn ol { padding-left: 20px; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    #report { overflow-wrap: anywhere; }
+    #report table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; font-size: .92rem; }
+    #report th, #report td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; }
+    #report h1 { font-size: 1.4rem; } #report h2 { font-size: 1.2rem; margin-top: 28px; } #report h3 { font-size: 1.05rem; }
+    #report blockquote { margin: 0; padding: 8px 12px; border-left: 3px solid var(--warn-border); background: var(--warn-bg); }
+    [hidden] { display: none !important; }
+    footer { color: var(--muted); font-size: .85rem; margin-top: 32px; }
+    footer a { color: inherit; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Landing Page Audit</h1>
+  <p class="sub">Copywriting · UX/conversión · SEO on-page · PageSpeed — un solo reporte con puntaje justificado y top 3 quick wins.</p>
+
+  <section class="card">
+    <form id="form" class="row">
+      <input id="url" type="url" required placeholder="https://tu-landing.com" autocomplete="url" />
+      <select id="strategy" title="Dispositivo para PageSpeed">
+        <option value="mobile">Mobile</option>
+        <option value="desktop">Desktop</option>
+      </select>
+      <button id="go" type="submit">Auditar</button>
+    </form>
+    <div id="accessRow" class="row" style="margin-top:8px" hidden>
+      <input id="access" type="password" placeholder="Código de acceso" />
+    </div>
+  </section>
+
+  <section id="progress" class="card" hidden>
+    <ul class="steps">
+      <li id="s-fetch" data-state="idle">Obtener contenido de la página</li>
+      <li id="s-psi" data-state="idle">PageSpeed Insights (Lighthouse)</li>
+      <li id="s-audit" data-state="idle">Análisis en 3 bloques con la rúbrica</li>
+    </ul>
+  </section>
+
+  <section id="fallback" class="card warn" hidden>
+    <strong>No se pudo leer el contenido automáticamente.</strong>
+    <p id="fallbackReason"></p>
+    <p>Para no inventar contenido, subí la página ya renderizada:</p>
+    <ol>
+      <li>Abrí la landing en Chrome o Edge y esperá que cargue completa (scrolleá hasta el final).</li>
+      <li><kbd>Ctrl/Cmd + S</kbd> → tipo <em>"Página web, un solo archivo (.mhtml)"</em>.</li>
+      <li>Subí ese archivo acá (también acepta .html).</li>
+    </ol>
+    <input id="file" type="file" accept=".mhtml,.mht,.html,.htm" />
+  </section>
+
+  <section id="out" class="card" hidden>
+    <div class="actions">
+      <button id="dl" class="ghost" type="button">Descargar .md</button>
+      <button id="copy" class="ghost" type="button">Copiar Markdown</button>
+    </div>
+    <article id="report"></article>
+  </section>
+
+  <footer>Código abierto (MIT). Ningún dato se guarda: la página se analiza y se descarta.</footer>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let state = { url: "", psi: null, psiPromise: null, markdown: "" };
+
+const storage = {
+  get: (k) => { try { return localStorage.getItem(k) || ""; } catch { return ""; } },
+  set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
+};
+$("access").value = storage.get("accessCode");
+if ($("access").value) $("accessRow").hidden = false;
+
+function step(id, s, label) {
+  const el = $(id);
+  el.dataset.state = s;
+  if (label) el.textContent = label;
+}
+
+function headers() {
+  const h = { "content-type": "application/json" };
+  const code = $("access").value.trim();
+  if (code) { h["x-access-code"] = code; storage.set("accessCode", code); }
+  return h;
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(path, { ...opts, headers: headers() });
+  if (res.status === 401) {
+    $("accessRow").hidden = false;
+    $("access").focus();
+    throw new Error("Esta instancia pide código de acceso. Ingresalo y volvé a intentar.");
+  }
+  return res;
+}
+
+$("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  state = { url: $("url").value.trim(), psi: null, psiPromise: null, markdown: "" };
+  $("go").disabled = true;
+  $("progress").hidden = false;
+  $("fallback").hidden = true;
+  $("out").hidden = true;
+  $("report").innerHTML = "";
+  step("s-fetch", "run", "Obtener contenido de la página");
+  step("s-psi", "run", "PageSpeed Insights (Lighthouse) — puede tardar ~30 s");
+  step("s-audit", "idle", "Análisis en 3 bloques con la rúbrica");
+
+  // PageSpeed corre en paralelo con el fetch: es lo más lento y no depende de nada.
+  state.psiPromise = runPsi();
+  try {
+    const res = await api("/api/extract", { method: "POST", body: JSON.stringify({ url: state.url }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Error al leer la página.");
+    if (data.needsFallback) {
+      step("s-fetch", "warn", "Fetch automático sin contenido — esperando el .mhtml");
+      $("fallbackReason").textContent = data.reason;
+      $("fallback").hidden = false;
+      $("go").disabled = false;
+      return;
+    }
+    step("s-fetch", "ok", `Contenido obtenido (${data.page.textLength.toLocaleString()} caracteres, ${data.page.headings.length} headings, ${data.page.ctas.length} CTAs)`);
+    await runAudit(data.page);
+  } catch (err) {
+    step(state.page ? "s-audit" : "s-fetch", "warn", err.message);
+  } finally {
+    $("go").disabled = false;
+  }
+});
+
+async function runPsi() {
+  try {
+    const q = new URLSearchParams({ url: state.url, strategy: $("strategy").value });
+    const res = await api(`/api/psi?${q}`);
+    const data = await res.json();
+    if (data.error) { step("s-psi", "warn", `PageSpeed: ${data.message} El audit sigue sin esta sección.`); return data; }
+    const s = data.scores;
+    step("s-psi", "ok", `PageSpeed: rendimiento ${s.performance} · accesibilidad ${s.accessibility} · SEO ${s.seo}`);
+    return data;
+  } catch (err) {
+    step("s-psi", "warn", `PageSpeed: ${err.message}`);
+    return { error: "client", message: err.message };
+  }
+}
+
+$("file").addEventListener("change", async () => {
+  const file = $("file").files[0];
+  if (!file) return;
+  $("go").disabled = true;
+  try {
+    const raw = await file.text();
+    const isMhtml = /\.mht(ml)?$/i.test(file.name);
+    const html = slimHtml(isMhtml ? mhtmlToHtml(raw) : raw);
+    const res = await api("/api/extract", {
+      method: "POST",
+      body: JSON.stringify({ url: state.url, html, source: isMhtml ? "mhtml" : "html" }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+    $("fallback").hidden = true;
+    step("s-fetch", "ok", `Contenido desde ${file.name} (${data.page.textLength.toLocaleString()} caracteres)`);
+    await runAudit(data.page);
+  } catch (err) {
+    if (state.page) step("s-audit", "warn", err.message);
+    else alert(`No se pudo procesar el archivo: ${err.message}`);
+  } finally {
+    $("go").disabled = false;
+    $("file").value = "";
+  }
+});
+
+// .mhtml = MIME multipart. Tomamos la primera parte text/html y la decodificamos.
+function mhtmlToHtml(raw) {
+  const boundary = (raw.match(/boundary="?([^";\r\n]+)"?/i) || [])[1];
+  if (!boundary) throw new Error("El archivo no parece un .mhtml válido.");
+  const parts = raw.split("--" + boundary);
+  const part = parts.find((p) => /content-type:\s*text\/html/i.test(p.split(/\r?\n\r?\n/)[0]));
+  if (!part) throw new Error("No se encontró HTML dentro del .mhtml.");
+  const sep = part.search(/\r?\n\r?\n/);
+  const head = part.slice(0, sep);
+  const body = part.slice(sep).replace(/^\r?\n\r?\n/, "");
+  const charset = (head.match(/charset="?([\w-]+)/i) || [, "utf-8"])[1];
+  let bytes;
+  if (/transfer-encoding:\s*quoted-printable/i.test(head)) {
+    const s = body.replace(/=\r?\n/g, "");
+    const out = [];
+    for (let i = 0; i < s.length; i++) {
+      if (s[i] === "=" && /^[0-9A-F]{2}$/i.test(s.substr(i + 1, 2))) { out.push(parseInt(s.substr(i + 1, 2), 16)); i += 2; }
+      else out.push(s.charCodeAt(i) & 0xff);
+    }
+    bytes = new Uint8Array(out);
+  } else if (/transfer-encoding:\s*base64/i.test(head)) {
+    bytes = Uint8Array.from(atob(body.replace(/\s/g, "")), (c) => c.charCodeAt(0));
+  } else {
+    return body;
+  }
+  return new TextDecoder(charset).decode(bytes);
+}
+
+// Recorta lo que no aporta al análisis para no pasar el límite de 4.5 MB de Vercel.
+function slimHtml(html) {
+  return html
+    .replace(/<script(?![^>]*application\/ld\+json)[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<svg[\s\S]*?<\/svg>/gi, "<svg></svg>")
+    .replace(/\s(?:src|href)="data:[^"]*"/gi, "");
+}
+
+async function runAudit(page) {
+  state.page = page;
+  step("s-audit", "run", "Esperando PageSpeed para cerrar el criterio de performance…");
+  const pagespeed = await state.psiPromise;
+  step("s-audit", "run", "Analizando copy, UX y SEO con la rúbrica — 1 a 3 min");
+  const res = await api("/api/audit", {
+    method: "POST",
+    body: JSON.stringify({ page, pagespeed, reportLanguage: "español" }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || `Error HTTP ${res.status} en el análisis.`);
+  }
+  $("out").hidden = false;
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let pending = false;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    state.markdown += decoder.decode(value, { stream: true });
+    if (!pending) {
+      pending = true;
+      requestAnimationFrame(() => { render(); pending = false; });
+    }
+  }
+  render();
+  step("s-audit", "ok", "Reporte listo");
+}
+
+function render() {
+  $("report").innerHTML = DOMPurify.sanitize(marked.parse(state.markdown));
+}
+
+$("dl").addEventListener("click", () => {
+  const host = (() => { try { return new URL(state.url).hostname; } catch { return "landing"; } })();
+  const blob = new Blob([state.markdown], { type: "text/markdown" });
+  const a = Object.assign(document.createElement("a"), {
+    href: URL.createObjectURL(blob),
+    download: `audit-${host}-${new Date().toISOString().slice(0, 10)}.md`,
+  });
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+$("copy").addEventListener("click", async () => {
+  await navigator.clipboard.writeText(state.markdown);
+  $("copy").textContent = "Copiado ✓";
+  setTimeout(() => ($("copy").textContent = "Copiar Markdown"), 1500);
+});
+</script>
+</body>
+</html>
