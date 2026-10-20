@@ -1,5 +1,8 @@
 # Landing Page Audit
 
+**▶ Demo en vivo: [landing-page-audit-xi.vercel.app](https://landing-page-audit-xi.vercel.app/)**
+(3 auditorías por mes por IP · botón "Ver un reporte de ejemplo" sin costo)
+
 Audita una landing page a partir de su URL y entrega un diagnóstico de **copywriting, UX/conversión
 y SEO on-page**, más **datos técnicos de PageSpeed Insights**, con puntaje justificado por criterio
 y un top 3 de quick wins.
