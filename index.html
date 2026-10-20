@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Landing Page Audit</title>
-  <meta name="description" content="Auditoría de landing pages: copywriting, UX/conversión, SEO on-page y PageSpeed en un solo reporte con puntaje justificado." />
+  <meta name="description" content="Landing page audit: copywriting, UX/conversion, on-page SEO and PageSpeed in a single report with justified scores." />
   <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
   <style>
@@ -54,52 +54,57 @@
 <body>
 <main>
   <h1>Landing Page Audit</h1>
-  <p class="sub">Copywriting · UX/conversión · SEO on-page · PageSpeed — un solo reporte con puntaje justificado y top 3 quick wins.</p>
+  <p class="sub">Copywriting · UX/conversion · On-page SEO · PageSpeed — one report with justified scores and the top 3 quick wins.</p>
 
   <section class="card">
     <form id="form" class="row">
-      <input id="url" type="url" required placeholder="https://tu-landing.com" autocomplete="url" />
-      <select id="strategy" title="Dispositivo para PageSpeed">
+      <input id="url" type="url" required placeholder="https://your-landing.com" autocomplete="url" />
+      <select id="strategy" title="Device for PageSpeed">
         <option value="mobile">Mobile</option>
         <option value="desktop">Desktop</option>
       </select>
-      <button id="go" type="submit">Auditar</button>
+      <select id="lang" title="Report language">
+        <option value="English">English</option>
+        <option value="Spanish">Español</option>
+        <option value="French">Français</option>
+      </select>
+      <button id="go" type="submit">Audit</button>
     </form>
-    <p class="hint">¿Sin una URL a mano? <button id="sample" class="link" type="button">Ver un reporte de ejemplo</button> (auditoría real de Diffr, sin costo ni espera). Demo pública: 3 auditorías por mes.</p>
+    <p class="hint">No URL at hand? <button id="sample" class="link" type="button">See a sample report</button> (a real audit of Diffr, free and instant). Public demo: 3 audits per month.</p>
     <div id="accessRow" class="row" style="margin-top:8px" hidden>
-      <input id="access" type="password" placeholder="Código de acceso" />
+      <input id="access" type="password" placeholder="Access code" />
     </div>
   </section>
 
   <section id="progress" class="card" hidden>
     <ul class="steps">
-      <li id="s-fetch" data-state="idle">Obtener contenido de la página</li>
+      <li id="s-fetch" data-state="idle">Fetch the page content</li>
       <li id="s-psi" data-state="idle">PageSpeed Insights (Lighthouse)</li>
-      <li id="s-audit" data-state="idle">Análisis en 3 bloques con la rúbrica</li>
+      <li id="s-audit" data-state="idle">3-block analysis with the rubric</li>
     </ul>
   </section>
 
   <section id="fallback" class="card warn" hidden>
-    <strong>No se pudo leer el contenido automáticamente.</strong>
+    <strong>The content couldn't be read automatically.</strong>
     <p id="fallbackReason"></p>
-    <p>Para no inventar contenido, subí la página ya renderizada:</p>
+    <p>To avoid inventing content, upload the already rendered page:</p>
     <ol>
-      <li>Abrí la landing en Chrome o Edge y esperá que cargue completa (scrolleá hasta el final).</li>
-      <li><kbd>Ctrl/Cmd + S</kbd> → tipo <em>"Página web, un solo archivo (.mhtml)"</em>.</li>
-      <li>Subí ese archivo acá (también acepta .html).</li>
+      <li>Open the landing in Chrome or Edge and let it load completely (scroll to the bottom).</li>
+      <li><kbd>Ctrl/Cmd + S</kbd> → type <em>"Webpage, Single File (.mhtml)"</em>.</li>
+      <li>Upload that file here (.html also works).</li>
     </ol>
     <input id="file" type="file" accept=".mhtml,.mht,.html,.htm" />
   </section>
 
   <section id="out" class="card" hidden>
     <div class="actions">
-      <button id="dl" class="ghost" type="button">Descargar .md</button>
-      <button id="copy" class="ghost" type="button">Copiar Markdown</button>
+      <button id="dl" class="ghost" type="button">Download .md</button>
+      <button id="copy" class="ghost" type="button">Copy Markdown</button>
     </div>
     <article id="report"></article>
   </section>
 
-  <footer>Código abierto (MIT). Ningún dato se guarda: la página se analiza y se descarta.</footer>
+  <footer>Open source (MIT) · <a href="https://github.com/nataliapalacios/landing-page-audit">GitHub</a>. No data is stored: the page is analyzed and discarded.</footer>
 </main>
 
 <script>
@@ -112,6 +117,8 @@ const storage = {
 };
 $("access").value = storage.get("accessCode");
 if ($("access").value) $("accessRow").hidden = false;
+$("lang").value = storage.get("reportLanguage") || "English";
+$("lang").addEventListener("change", () => storage.set("reportLanguage", $("lang").value));
 
 function step(id, s, label) {
   const el = $(id);
@@ -131,7 +138,7 @@ async function api(path, opts = {}) {
   if (res.status === 401) {
     $("accessRow").hidden = false;
     $("access").focus();
-    throw new Error("Esta instancia pide código de acceso. Ingresalo y volvé a intentar.");
+    throw new Error("This instance requires an access code. Enter it and try again.");
   }
   return res;
 }
@@ -144,24 +151,24 @@ $("form").addEventListener("submit", async (e) => {
   $("fallback").hidden = true;
   $("out").hidden = true;
   $("report").innerHTML = "";
-  step("s-fetch", "run", "Obtener contenido de la página");
-  step("s-psi", "run", "PageSpeed Insights (Lighthouse) — puede tardar ~30 s");
-  step("s-audit", "idle", "Análisis en 3 bloques con la rúbrica");
+  step("s-fetch", "run", "Fetch the page content");
+  step("s-psi", "run", "PageSpeed Insights (Lighthouse) — may take ~30 s");
+  step("s-audit", "idle", "3-block analysis with the rubric");
 
-  // PageSpeed corre en paralelo con el fetch: es lo más lento y no depende de nada.
+  // PageSpeed runs in parallel with the fetch: it's the slowest step and depends on nothing.
   state.psiPromise = runPsi();
   try {
     const res = await api("/api/extract", { method: "POST", body: JSON.stringify({ url: state.url }) });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Error al leer la página.");
+    if (!res.ok) throw new Error(data.message || "Error reading the page.");
     if (data.needsFallback) {
-      step("s-fetch", "warn", "Fetch automático sin contenido — esperando el .mhtml");
+      step("s-fetch", "warn", "Automatic fetch returned no content — waiting for the .mhtml");
       $("fallbackReason").textContent = data.reason;
       $("fallback").hidden = false;
       $("go").disabled = false;
       return;
     }
-    step("s-fetch", "ok", `Contenido obtenido (${data.page.textLength.toLocaleString()} caracteres, ${data.page.headings.length} headings, ${data.page.ctas.length} CTAs)`);
+    step("s-fetch", "ok", `Content fetched (${data.page.textLength.toLocaleString()} characters, ${data.page.headings.length} headings, ${data.page.ctas.length} CTAs)`);
     await runAudit(data.page);
   } catch (err) {
     step(state.page ? "s-audit" : "s-fetch", "warn", err.message);
@@ -175,9 +182,9 @@ async function runPsi() {
     const q = new URLSearchParams({ url: state.url, strategy: $("strategy").value });
     const res = await api(`/api/psi?${q}`);
     const data = await res.json();
-    if (data.error) { step("s-psi", "warn", `PageSpeed: ${data.message} El audit sigue sin esta sección.`); return data; }
+    if (data.error) { step("s-psi", "warn", `PageSpeed: ${data.message} The audit continues without this section.`); return data; }
     const s = data.scores;
-    step("s-psi", "ok", `PageSpeed: rendimiento ${s.performance} · accesibilidad ${s.accessibility} · SEO ${s.seo}`);
+    step("s-psi", "ok", `PageSpeed: performance ${s.performance} · accessibility ${s.accessibility} · SEO ${s.seo}`);
     return data;
   } catch (err) {
     step("s-psi", "warn", `PageSpeed: ${err.message}`);
@@ -200,24 +207,24 @@ $("file").addEventListener("change", async () => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
     $("fallback").hidden = true;
-    step("s-fetch", "ok", `Contenido desde ${file.name} (${data.page.textLength.toLocaleString()} caracteres)`);
+    step("s-fetch", "ok", `Content from ${file.name} (${data.page.textLength.toLocaleString()} characters)`);
     await runAudit(data.page);
   } catch (err) {
     if (state.page) step("s-audit", "warn", err.message);
-    else alert(`No se pudo procesar el archivo: ${err.message}`);
+    else alert(`The file couldn't be processed: ${err.message}`);
   } finally {
     $("go").disabled = false;
     $("file").value = "";
   }
 });
 
-// .mhtml = MIME multipart. Tomamos la primera parte text/html y la decodificamos.
+// .mhtml = multipart MIME. Take the first text/html part and decode it.
 function mhtmlToHtml(raw) {
   const boundary = (raw.match(/boundary="?([^";\r\n]+)"?/i) || [])[1];
-  if (!boundary) throw new Error("El archivo no parece un .mhtml válido.");
+  if (!boundary) throw new Error("The file doesn't look like a valid .mhtml.");
   const parts = raw.split("--" + boundary);
   const part = parts.find((p) => /content-type:\s*text\/html/i.test(p.split(/\r?\n\r?\n/)[0]));
-  if (!part) throw new Error("No se encontró HTML dentro del .mhtml.");
+  if (!part) throw new Error("No HTML found inside the .mhtml.");
   const sep = part.search(/\r?\n\r?\n/);
   const head = part.slice(0, sep);
   const body = part.slice(sep).replace(/^\r?\n\r?\n/, "");
@@ -239,7 +246,7 @@ function mhtmlToHtml(raw) {
   return new TextDecoder(charset).decode(bytes);
 }
 
-// Recorta lo que no aporta al análisis para no pasar el límite de 4.5 MB de Vercel.
+// Strip what doesn't help the analysis, to stay under Vercel's 4.5 MB body limit.
 function slimHtml(html) {
   return html
     .replace(/<script(?![^>]*application\/ld\+json)[\s\S]*?<\/script>/gi, "")
@@ -250,16 +257,16 @@ function slimHtml(html) {
 
 async function runAudit(page) {
   state.page = page;
-  step("s-audit", "run", "Esperando PageSpeed para cerrar el criterio de performance…");
+  step("s-audit", "run", "Waiting for PageSpeed to settle the performance criterion…");
   const pagespeed = await state.psiPromise;
-  step("s-audit", "run", "Analizando copy, UX y SEO con la rúbrica — 1 a 3 min");
+  step("s-audit", "run", "Analyzing copy, UX and SEO with the rubric — usually under a minute");
   const res = await api("/api/audit", {
     method: "POST",
-    body: JSON.stringify({ page, pagespeed, reportLanguage: "español" }),
+    body: JSON.stringify({ page, pagespeed, reportLanguage: $("lang").value }),
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new Error(data.message || `Error HTTP ${res.status} en el análisis.`);
+    throw new Error(data.message || `HTTP ${res.status} error during the analysis.`);
   }
   $("out").hidden = false;
   const reader = res.body.getReader();
@@ -275,7 +282,7 @@ async function runAudit(page) {
     }
   }
   render();
-  step("s-audit", "ok", "Reporte listo");
+  step("s-audit", "ok", "Report ready");
 }
 
 $("sample").addEventListener("click", async () => {
@@ -305,8 +312,8 @@ $("dl").addEventListener("click", () => {
 
 $("copy").addEventListener("click", async () => {
   await navigator.clipboard.writeText(state.markdown);
-  $("copy").textContent = "Copiado ✓";
-  setTimeout(() => ($("copy").textContent = "Copiar Markdown"), 1500);
+  $("copy").textContent = "Copied ✓";
+  setTimeout(() => ($("copy").textContent = "Copy Markdown"), 1500);
 });
 </script>
 </body>

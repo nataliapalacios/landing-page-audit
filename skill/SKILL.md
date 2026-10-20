@@ -1,117 +1,112 @@
 ---
 name: landing-page-audit
 description: >-
-  Audita una landing page a partir de su URL y entrega un diagnóstico completo de copywriting,
-  UX/conversión y SEO on-page, con puntaje por bloque y recomendaciones accionables priorizadas
-  por impacto. Usar este skill cuando el usuario pida "auditar landing page", "revisar mi landing",
-  "audit de conversión", "por qué no convierte mi página", "análisis de landing page", "/audit-landing",
-  o dé una URL y pida feedback sobre copy, diseño o SEO de esa página. El output son dos entregables:
-  un checklist con puntaje por criterio y un reporte narrativo con hallazgos y recomendaciones.
+  Audits a landing page from its URL and delivers a full diagnosis of copywriting,
+  UX/conversion and on-page SEO, with a score per block and actionable recommendations prioritized
+  by impact. Use this skill when the user asks to "audit a landing page", "review my landing",
+  "conversion audit", "why isn't my page converting", "landing page analysis", "/audit-landing",
+  or gives a URL and asks for feedback on that page's copy, design or SEO. The output is two
+  deliverables: a scored checklist per criterion and a narrative report with findings and recommendations.
 disable-model-invocation: true
 ---
 
 # Landing Page Audit
 
-Auditar una landing page significa mucho más que "leerla y opinar". Este skill sigue una rúbrica
-fija de tres bloques (copy, UX/conversión, SEO on-page) para que el resultado sea consistente,
-comparable entre auditorías, y accionable — no una opinión suelta.
+Auditing a landing page means much more than "reading it and giving an opinion". This skill follows
+a fixed three-block rubric (copy, UX/conversion, on-page SEO) so the result is consistent,
+comparable across audits, and actionable — not a loose opinion.
 
-## El flujo
+## The flow
 
 ```
-0. Recibir la URL          confirmar idioma esperado de la página
-1. Fetch del contenido     HTML, texto, estructura, meta tags -> ver casos borde si falla
-1b. PageSpeed Insights     datos técnicos objetivos (Lighthouse), opcional pero recomendado -> references/pagespeed-integration.md
-2. Analizar en 3 bloques   copy / UX-conversión / SEO on-page  -> references/scoring-criteria.md
-3. Puntuar                 /10 por bloque + global, con justificación por criterio
-4. Entregar                checklist + reporte narrativo + datos técnicos -> references/report-format.md
+0. Receive the URL          confirm the page's expected language
+1. Fetch the content        HTML, text, structure, meta tags -> see edge cases if it fails
+1b. PageSpeed Insights      objective technical data (Lighthouse), optional but recommended -> references/pagespeed-integration.md
+2. Analyze in 3 blocks      copy / UX-conversion / on-page SEO  -> references/scoring-criteria.md
+3. Score                    /10 per block + overall, with a justification per criterion
+4. Deliver                  checklist + narrative report + technical data -> references/report-format.md
 ```
 
-## Fase 0: Recibir el input
+## Phase 0: Receive the input
 
-El único input requerido es la URL de la landing page. Si el usuario no la da, pedirla.
-Si la página está claramente en un idioma distinto al español, avisar que el análisis de copy
-se hace en el idioma original de la página (no traducir el copy analizado, sí el reporte si el
-usuario lo pide en español).
+The only required input is the landing page URL. If the user doesn't provide it, ask for it.
+If the page is in a different language than the report, the copy analysis is done in the page's
+original language (don't translate the quoted copy; write the report in the user's language).
 
-## Fase 1: Fetch del contenido
+## Phase 1: Fetch the content
 
-Traer el HTML/texto de la página con la herramienta de fetch disponible. Extraer:
-- Texto visible completo (headings, body copy, CTAs, footer)
-- Estructura de headings (H1, H2, H3...)
-- Todos los CTAs y sus textos exactos
-- Formularios: cantidad de campos, tipo de campos
+Fetch the page's HTML/text with the available fetch tool. Extract:
+- Full visible text (headings, body copy, CTAs, footer)
+- Heading structure (H1, H2, H3...)
+- All CTAs and their exact text
+- Forms: number of fields, field types
 - Meta tags: title, meta description, viewport, og:tags
-- Imágenes: presencia/ausencia de alt text
-- Señales de prueba social: testimonios, logos de clientes, cifras, reviews
+- Images: presence/absence of alt text
+- Social proof signals: testimonials, client logos, figures, reviews
 
-Si el fetch falla (bloqueo, JS-heavy sin contenido en el HTML inicial, paywall), no inventar
-contenido. Aplicar el fallback de `references/edge-cases.md` y decírselo al usuario explícitamente.
+If the fetch fails (blocking, JS-heavy with no content in the initial HTML, paywall), don't invent
+content. Apply the fallback in `references/edge-cases.md` and tell the user explicitly.
 
-Guardar el contenido extraído antes de analizar — si la página es muy larga, no hace falta un
-archivo en disco (esto corre en una sola sesión), pero sí mantener el texto completo a mano para
-poder citar hallazgos concretos en el reporte.
+Keep the extracted content before analyzing — if the page is very long, no file on disk is needed
+(this runs in a single session), but keep the full text at hand to quote concrete findings in the report.
 
-## Fase 1b: PageSpeed Insights (datos técnicos objetivos)
+## Phase 1b: PageSpeed Insights (objective technical data)
 
-Complementar el análisis manual con datos reales de Lighthouse vía la API pública de PageSpeed
-Insights. Es un paso recomendado, no bloqueante — si falla o se satura la cuota, seguir con el
-resto del audit igual. Detalle completo de la llamada, los campos a extraer y el manejo de
-errores (incluyendo qué hacer ante un 429 por falta de API key) en
-`references/pagespeed-integration.md`.
+Complement the manual analysis with real Lighthouse data via the public PageSpeed Insights API.
+It's a recommended step, not a blocking one — if it fails or the quota is exhausted, carry on with
+the rest of the audit. Full details of the call, the fields to extract and error handling
+(including what to do on a 429 due to a missing API key) in `references/pagespeed-integration.md`.
 
-Estos datos se muestran en su propia sección del reporte, separados de la rúbrica manual — son
-medición automática, no reemplazan el juicio de los bloques de copy/UX/SEO, pero sí informan el
-sub-criterio "Señales de performance" con un número real en vez de una estimación.
+This data is shown in its own report section, separate from the manual rubric — it's automated
+measurement, it doesn't replace the judgment of the copy/UX/SEO blocks, but it does inform the
+"Performance signals" sub-criterion with a real number instead of an estimate.
 
-## Fase 2: Analizar en 3 bloques
+## Phase 2: Analyze in 3 blocks
 
-Leer `references/scoring-criteria.md` — ahí está la rúbrica completa con los sub-criterios de
-cada bloque. En resumen:
+Read `references/scoring-criteria.md` — it holds the full rubric with each block's sub-criteria.
+In short:
 
-- **Copywriting y persuasión**: claridad de la propuesta de valor, jerarquía del mensaje, fuerza
-  de los CTAs, prueba social, manejo de objeciones.
-- **UX y conversión**: fricción en el CTA/formulario principal, jerarquía visual, pasos hasta
-  convertir, mobile-friendliness básico.
-- **SEO on-page**: title, meta description, H1 único, alt text, señales de performance, structured
-  data si existe.
+- **Copywriting & persuasion**: value proposition clarity, message hierarchy, CTA strength,
+  social proof, objection handling.
+- **UX & conversion**: friction in the main CTA/form, visual hierarchy, steps to convert,
+  basic mobile-friendliness.
+- **On-page SEO**: title, meta description, single H1, alt text, performance signals, structured
+  data if present.
 
-Cada sub-criterio se evalúa con evidencia concreta de la página, nunca con una opinión genérica.
-Un hallazgo sin cita textual o referencia concreta al contenido de la página no es válido.
+Every sub-criterion is evaluated with concrete evidence from the page, never with a generic opinion.
+A finding without a verbatim quote or a concrete reference to the page's content is not valid.
 
-## Fase 3: Puntuar
+## Phase 3: Score
 
-Puntaje 1-10 por sub-criterio, promedio por bloque, promedio global. Ver la escala exacta y qué
-significa cada tramo en `references/scoring-criteria.md`. El puntaje siempre va acompañado de la
-razón — nunca un número solo.
+Score 1-10 per sub-criterion, average per block, overall average. See the exact scale and what each
+range means in `references/scoring-criteria.md`. The score always comes with the reason — never a
+number alone.
 
-## Fase 4: Entregar
+## Phase 4: Deliver
 
-Dos entregables en un solo reporte (ver `references/report-format.md` para el template exacto):
+Two deliverables in a single report (see `references/report-format.md` for the exact template):
 
-1. **Checklist con puntaje**: tabla escaneable, un renglón por sub-criterio, puntaje + un hallazgo
-   de una línea.
-2. **Reporte narrativo**: por cada bloque, 2-4 párrafos con hallazgos específicos (citando el copy
-   real de la página) y recomendaciones priorizadas por impacto (alto/medio/bajo).
+1. **Scored checklist**: scannable table, one row per sub-criterion, score + a one-line finding.
+2. **Narrative report**: for each block, 2-4 paragraphs with specific findings (quoting the page's
+   real copy) and recommendations prioritized by impact (high/medium/low).
 
-Cerrar siempre con un top 3 de quick wins — los cambios de mayor impacto y menor esfuerzo.
+Always close with a top 3 quick wins — the highest-impact, lowest-effort changes.
 
-Entregar como archivo Markdown (el usuario puede pedir .docx si lo prefiere para compartir).
+Deliver as a Markdown file (the user may ask for .docx if they prefer it for sharing).
 
-## Casos borde
+## Edge cases
 
-Ver `references/edge-cases.md` para el detalle de: bloqueo de scraping, landing multi-idioma,
-páginas que son solo un embed (Typeform/Calendly), páginas muy largas.
+See `references/edge-cases.md` for: scraping blocks, multilingual landings, pages that are just an
+embed (Typeform/Calendly), very long pages.
 
 ## Self-improvement
 
-Este skill nunca está terminado. Mejorarlo con el uso.
+This skill is never finished. Improve it with use.
 
-- Cuando el usuario corrija cómo se hizo un paso, actualizar el reference file correspondiente
-  (o este SKILL.md) para que la corrección quede fija. No arreglarlo solo para esa corrida.
-- Cuando una corrección sea una regla dura ("siempre hacé X", "nunca hagas Y"), agregarla como
-  regla permanente acá.
-- Cuando el usuario diga que un output quedó genuinamente bueno, guardarlo en
-  `references/examples/` para que sirva de modelo en futuras corridas.
-- Mantener el skill chico: al agregar algo, correr el test de eliminación y cortar lo que no
-  cambie el comportamiento.
+- When the user corrects how a step was done, update the corresponding reference file
+  (or this SKILL.md) so the correction sticks. Don't fix it for that run only.
+- When a correction is a hard rule ("always do X", "never do Y"), add it here as a permanent rule.
+- When the user says an output turned out genuinely good, save it in `references/examples/` so it
+  serves as a model in future runs.
+- Keep the skill small: when adding something, run the deletion test and cut whatever doesn't
+  change behavior.

@@ -1,5 +1,5 @@
-// GET ?url=...&strategy=mobile -> resumen de PageSpeed Insights (Fase 1b del skill).
-// Nunca bloquea el audit: ante cualquier error devuelve { error } y el reporte omite la sección.
+// GET ?url=...&strategy=mobile -> PageSpeed Insights summary (skill phase 1b).
+// Never blocks the audit: on any error it returns { error } and the report omits the section.
 import { checkAccess, json, validateUrl } from "../lib/http.js";
 
 const CATEGORIES = ["performance", "accessibility", "best-practices", "seo"];
@@ -23,20 +23,20 @@ export async function GET(request) {
   try {
     res = await fetch(api, { signal: AbortSignal.timeout(80000) });
   } catch (e) {
-    return json({ error: "unreachable", message: `PageSpeed no respondió (${e.name === "TimeoutError" ? "timeout" : e.message}).` });
+    return json({ error: "unreachable", message: `PageSpeed didn't respond (${e.name === "TimeoutError" ? "timeout" : e.message}).` });
   }
 
   if (res.status === 429) {
     return json({
       error: "rate_limited",
       message: process.env.PAGESPEED_API_KEY
-        ? "PageSpeed devolvió 429 (cuota de la API key agotada)."
-        : "PageSpeed devolvió 429: la cuota pública sin API key está saturada. Configurá PAGESPEED_API_KEY (gratis) para uso confiable.",
+        ? "PageSpeed returned 429 (API key quota exhausted)."
+        : "PageSpeed returned 429: the keyless public quota is saturated. Set PAGESPEED_API_KEY (free) for reliable use.",
     });
   }
   if (!res.ok) {
     const detail = await res.json().catch(() => ({}));
-    return json({ error: "psi_error", message: detail?.error?.message || `PageSpeed devolvió HTTP ${res.status}.` });
+    return json({ error: "psi_error", message: detail?.error?.message || `PageSpeed returned HTTP ${res.status}.` });
   }
 
   const data = await res.json();

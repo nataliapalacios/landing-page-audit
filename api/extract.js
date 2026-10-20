@@ -1,5 +1,5 @@
-// POST { url, html? } -> señales extraídas de la página.
-// Sin html: hace el fetch server-side. Con html (desde un .mhtml/.html subido): lo parsea directo.
+// POST { url, html? } -> signals extracted from the page.
+// Without html: fetches server-side. With html (from an uploaded .mhtml/.html): parses it directly.
 import { extractPage } from "../lib/extract.js";
 import { json, validateUrl } from "../lib/http.js";
 
@@ -25,7 +25,7 @@ export async function POST(request) {
       headers: { "user-agent": BROWSER_UA, "accept-language": "es,en;q=0.8,fr;q=0.6" },
     });
   } catch (e) {
-    return json({ needsFallback: true, reason: `No se pudo conectar con la página (${e.name === "TimeoutError" ? "timeout" : e.message}).` });
+    return json({ needsFallback: true, reason: `Couldn't connect to the page (${e.name === "TimeoutError" ? "timeout" : e.message}).` });
   }
 
   if (!res.ok) {
@@ -33,8 +33,8 @@ export async function POST(request) {
     return json({
       needsFallback: true,
       reason: blocked
-        ? `La página bloqueó el fetch automático (HTTP ${res.status}, probablemente Cloudflare/anti-bot).`
-        : `La página respondió HTTP ${res.status}. Confirmá que la URL es correcta y está online.`,
+        ? `The page blocked the automatic fetch (HTTP ${res.status}, probably Cloudflare/anti-bot).`
+        : `The page responded HTTP ${res.status}. Check that the URL is correct and online.`,
     });
   }
 
@@ -43,7 +43,7 @@ export async function POST(request) {
   if (page.isShell) {
     return json({
       needsFallback: true,
-      reason: `El HTML inicial casi no tiene contenido (${page.textLength} caracteres de texto): es una SPA sin SSR/prerender, el contenido solo existe después de ejecutar JavaScript.`,
+      reason: `The initial HTML has almost no content (${page.textLength} characters of text): it's an SPA without SSR/prerendering, so the content only exists after JavaScript runs.`,
       page,
     });
   }

@@ -1,17 +1,17 @@
-# Integración con PageSpeed Insights
+# PageSpeed Insights integration
 
-Datos técnicos objetivos (Lighthouse) que complementan la rúbrica manual. No reemplazan el
-análisis de copy/UX — son una fuente distinta, y el reporte los muestra en su propia sección para
-no mezclar juicio con medición automática.
+Objective technical data (Lighthouse) that complements the manual rubric. It doesn't replace the
+copy/UX analysis — it's a different source, and the report shows it in its own section so judgment
+isn't mixed with automated measurement.
 
-## Cómo llamar la API
+## How to call the API
 
-Endpoint público, sin necesidad de auth para volumen bajo (aunque la cuota compartida sin key se
-agota rápido — ver "Manejo de errores" abajo):
+Public endpoint, no auth needed for low volume (although the shared keyless quota runs out fast —
+see "Error handling" below):
 
 ```
 GET https://www.googleapis.com/pagespeedonline/v5/runPagespeed
-    ?url={URL_A_AUDITAR}
+    ?url={URL_TO_AUDIT}
     &strategy=mobile
     &category=performance
     &category=accessibility
@@ -19,74 +19,72 @@ GET https://www.googleapis.com/pagespeedonline/v5/runPagespeed
     &category=best-practices
 ```
 
-`strategy` puede ser `mobile` o `desktop` — correr mobile por default (mobile-first indexing), y
-ofrecer desktop si el usuario lo pide específicamente.
+`strategy` can be `mobile` or `desktop` — run mobile by default (mobile-first indexing), and offer
+desktop if the user specifically asks for it.
 
-**Para uso confiable / repetido:** conseguir una API key gratuita en Google Cloud Console
-("PageSpeed Insights API" → habilitar → crear credencial) y agregarla como `&key=...`. Sin key,
-la cuota compartida entre todos los usuarios de internet se agota fácil (ver caso real abajo).
+**For reliable / repeated use:** get a free API key in Google Cloud Console
+("PageSpeed Insights API" → enable → create credential) and add it as `&key=...`. Without a key,
+the quota shared by every internet user runs out easily (see real case below).
 
-**Setup recomendado antes de usar este skill en serio (no solo para probarlo una vez):**
-1. Entrar a [console.cloud.google.com](https://console.cloud.google.com), crear o elegir un proyecto.
-2. Buscar "PageSpeed Insights API" y habilitarla (gratis, sin tarjeta para este uso).
-3. "APIs y servicios" → "Credenciales" → "Crear credenciales" → "Clave de API".
-4. Restringir la key para que solo sirva para esta API (buena práctica de seguridad).
-5. Usar la key como `&key=TU_KEY` en la llamada, o guardarla como variable de entorno.
+**Recommended setup before using this skill seriously (not just to try it once):**
+1. Go to [console.cloud.google.com](https://console.cloud.google.com), create or pick a project.
+2. Search for "PageSpeed Insights API" and enable it (free, no card or billing account needed).
+3. "APIs & Services" → "Credentials" → "Create credentials" → "API key".
+4. Restrict the key so it only works for this API (security good practice).
+5. Use the key as `&key=YOUR_KEY` in the call, or store it as an environment variable.
 
-Sin este setup, el skill sigue funcionando igual — solo que el paso de PageSpeed puede fallar por
-cuota, y en ese caso hay que caer al fallback (ver abajo).
+Without this setup the skill still works — the PageSpeed step may just fail due to quota, in which
+case fall back as described below.
 
-## ¿Por qué no sumar otra plataforma (GTmetrix, WebPageTest) por default?
+## Why not add another platform (GTmetrix, WebPageTest) by default?
 
-Con API key, PageSpeed Insights ya cubre performance + accesibilidad + best practices + SEO
-técnico + Core Web Vitals (lab y campo) en una sola llamada, con cuota de 25,000 requests/día
-gratis. Es lo que antes requería correr 3-4 herramientas separadas y sintetizar a mano.
+With an API key, PageSpeed Insights already covers performance + accessibility + best practices +
+technical SEO + Core Web Vitals (lab and field) in a single call, with a free quota of 25,000
+requests/day. That used to require running 3-4 separate tools and synthesizing by hand.
 
-Sumar una segunda plataforma agrega complejidad sin resolver un problema real que la key no
-resuelva ya. Se evaluó GTmetrix (cuota gratis muy chica: 5 tests/día) y WebPageTest (cuota
-generosa, pero pensado para debugging visual profundo — waterfall, filmstrip, multi-dispositivo).
+Adding a second platform adds complexity without solving a real problem the key doesn't already
+solve. GTmetrix (very small free quota: 5 tests/day) and WebPageTest (generous quota, but built for
+deep visual debugging — waterfall, filmstrip, multi-device) were evaluated.
 
-**Cuándo sí vale la pena agregar WebPageTest:** si en algún audit puntual se necesita el detalle
-visual que PSI no da (waterfall de requests, video de carga, testing desde ubicaciones/dispositivos
-específicos). No es parte del flujo default — se agrega como paso opcional solo si el usuario lo
-pide para un caso específico, no como parte estándar del skill.
+**When WebPageTest is worth adding:** if a specific audit needs visual detail PSI doesn't give
+(request waterfall, load video, testing from specific locations/devices). It's not part of the
+default flow — it's added as an optional step only if the user asks for it in a specific case.
 
-## Qué extraer de la respuesta
+## What to extract from the response
 
-De `lighthouseResult.categories`:
-- `performance.score` (0-1, multiplicar por 100)
+From `lighthouseResult.categories`:
+- `performance.score` (0-1, multiply by 100)
 - `accessibility.score`
 - `seo.score`
 - `best-practices.score`
 
-De `lighthouseResult.audits`, los Core Web Vitals más citables:
+From `lighthouseResult.audits`, the most quotable Core Web Vitals:
 - `largest-contentful-paint` → `displayValue`
 - `cumulative-layout-shift` → `displayValue`
 - `total-blocking-time` → `displayValue`
 
-De `loadingExperience` (si existe): datos de campo reales (CrUX) — no siempre están disponibles
-para sitios con poco tráfico, en cuyo caso el campo viene vacío o falta. No tratar su ausencia
-como un error; solo reportar "sin datos de campo suficientes" (esto es normal en sitios nuevos/bajo
-tráfico, es lo que pasó con Diffr — ver `examples/diffr-audit.md`).
+From `loadingExperience` (if present): real field data (CrUX) — not always available for
+low-traffic sites, in which case the field comes back empty or missing. Don't treat its absence as
+an error; just report "not enough field data" (this is normal for new/low-traffic sites, it's what
+happened with Diffr — see `examples/diffr-audit.md`).
 
-## Manejo de errores
+## Error handling
 
-**Caso real (Diffr, 21 ago 2026):** el endpoint devolvió `429` (rate limit) en dos intentos
-consecutivos, llamando sin API key. Esto es esperable sin key.
+**Real case (Diffr, Aug 21 2026):** the endpoint returned `429` (rate limit) on two consecutive
+attempts, called without an API key. This is expected without a key.
 
-- **Si devuelve 429 sin key:** no reintentar más de una vez. Decirle al usuario explícitamente
-  que la cuota pública está saturada en este momento y que, para un uso confiable (especialmente
-  si el skill se va a publicar y usar seguido), conviene generar una API key gratuita. Mientras
-  tanto, seguir el resto del audit con la rúbrica manual — PageSpeed es un complemento, no un
-  bloqueante.
-- **Si la URL no es alcanzable por Lighthouse** (login, bloqueo geográfico, etc.): reportarlo y
-  seguir sin esta sección.
-- **Si faltan datos de campo (CrUX):** normal en sitios de bajo tráfico, no es un error — reportar
-  solo los datos de laboratorio (Lighthouse) y aclarar que no hay datos de usuarios reales aún.
+- **If it returns 429 without a key:** don't retry more than once. Tell the user explicitly that
+  the public quota is saturated right now and that, for reliable use (especially if the skill will
+  be published and used often), a free API key is worth generating. Meanwhile, continue the rest of
+  the audit with the manual rubric — PageSpeed is a complement, not a blocker.
+- **If the URL isn't reachable by Lighthouse** (login, geo-blocking, etc.): report it and continue
+  without this section.
+- **If field data (CrUX) is missing:** normal for low-traffic sites, not an error — report only the
+  lab data (Lighthouse) and clarify there's no real-user data yet.
 
-## Cómo se refleja en el reporte
+## How it shows up in the report
 
-Sección nueva y separada en `report-format.md`: "Datos técnicos (PageSpeed Insights)". El
-sub-criterio "Señales de performance" de la rúbrica de `scoring-criteria.md` debe usar el puntaje
-real de `performance.score` cuando esté disponible, en vez de estimarlo cualitativamente — y
-citar la fuente ("según PageSpeed Insights, corrida el [fecha]").
+A new, separate section in `report-format.md`: "Technical data (PageSpeed Insights)". The
+"Performance signals" sub-criterion in `scoring-criteria.md` must use the real `performance.score`
+when available, instead of estimating qualitatively — and cite the source ("according to PageSpeed
+Insights, run on [date]").

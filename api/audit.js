@@ -1,10 +1,10 @@
-// POST { page, pagespeed, reportLanguage } -> reporte Markdown en streaming (Fases 2-4 del skill).
+// POST { page, pagespeed, reportLanguage } -> streamed Markdown report (skill phases 2-4).
 import Anthropic from "@anthropic-ai/sdk";
 import { systemPrompt } from "../lib/prompt.js";
 import { checkAccess, json, rateLimit } from "../lib/http.js";
 
 const client = new Anthropic();
-// Sonnet + effort low: ~3-4x más barato que Opus para una tarea guiada por rúbrica.
+// Sonnet + low effort: ~3-4x cheaper than Opus for a rubric-driven task.
 const MODEL = process.env.CLAUDE_MODEL || "claude-sonnet-5-5";
 const EFFORT = process.env.CLAUDE_EFFORT || "low";
 
@@ -12,21 +12,21 @@ export async function POST(request) {
   const denied = checkAccess(request);
   if (denied) return denied;
   if (!process.env.ANTHROPIC_API_KEY) {
-    return json({ error: "config", message: "Falta ANTHROPIC_API_KEY en las variables de entorno." }, 500);
+    return json({ error: "config", message: "ANTHROPIC_API_KEY is missing from the environment variables." }, 500);
   }
 
   const body = await request.json().catch(() => ({}));
-  if (!body.page?.url) return json({ error: "bad_request", message: "Falta el contenido extraído de la página." }, 400);
+  if (!body.page?.url) return json({ error: "bad_request", message: "The page's extracted content is missing." }, 400);
 
-  // Se cuenta recién acá, para que los errores de config o de input no consuman cupo.
+  // Counted only here, so config or input errors don't use up quota.
   const limited = await rateLimit(request);
   if (limited) return limited;
 
   const input = {
     auditDate: new Date().toISOString().slice(0, 10),
-    reportLanguage: body.reportLanguage || "español",
+    reportLanguage: body.reportLanguage || "English",
     page: body.page,
-    pagespeed: body.pagespeed || { error: "no_data", message: "PageSpeed no se corrió." },
+    pagespeed: body.pagespeed || { error: "no_data", message: "PageSpeed wasn't run." },
   };
 
   const stream = client.beta.messages.stream({
@@ -49,10 +49,10 @@ export async function POST(request) {
           if (event.type === "content_block_delta" && event.delta.type === "text_delta") write(event.delta.text);
         }
         const final = await stream.finalMessage();
-        if (final.stop_reason === "refusal") write("\n\n> ⚠️ El modelo declinó completar este análisis.");
-        if (final.stop_reason === "max_tokens") write("\n\n> ⚠️ El reporte se cortó por largo máximo.");
+        if (final.stop_reason === "refusal") write("\n\n> ⚠️ The model declined to complete this analysis.");
+        if (final.stop_reason === "max_tokens") write("\n\n> ⚠️ The report was cut off at the maximum length.");
       } catch (e) {
-        write(`\n\n> ⚠️ Error generando el reporte: ${e.message}`);
+        write(`\n\n> ⚠️ Error generating the report: ${e.message}`);
       } finally {
         controller.close();
       }

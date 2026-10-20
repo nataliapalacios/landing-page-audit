@@ -1,46 +1,46 @@
-# Rúbrica de puntaje
+# Scoring rubric
 
-Escala 1-10 por sub-criterio. Nunca dar un número sin la razón concreta detrás.
+1-10 scale per sub-criterion. Never give a number without the concrete reason behind it.
 
-- **9-10**: Best-in-class, sin fricción ni ambigüedad.
-- **7-8**: Sólido, con 1-2 mejoras menores posibles.
-- **5-6**: Funcional pero con fricción o vaguedad clara.
-- **3-4**: Débil, probablemente está costando conversiones.
-- **1-2**: Ausente o activamente contraproducente.
+- **9-10**: Best-in-class, no friction or ambiguity.
+- **7-8**: Solid, with 1-2 possible minor improvements.
+- **5-6**: Functional but with clear friction or vagueness.
+- **3-4**: Weak, probably costing conversions.
+- **1-2**: Absent or actively counterproductive.
 
-## Bloque 1: Copywriting y persuasión
+## Block 1: Copywriting & persuasion
 
-| Sub-criterio | Qué evaluar |
+| Sub-criterion | What to evaluate |
 |---|---|
-| Propuesta de valor | ¿Se entiende en menos de 5 segundos qué se ofrece y para quién? ¿Está en el H1/hero o hay que buscarla? |
-| Jerarquía del mensaje | ¿El copy sigue un orden lógico (problema → solución → prueba → acción) o es una lista plana de features? |
-| Fuerza del CTA | ¿El texto del botón es específico y orientado a beneficio ("Empezá gratis") o genérico ("Enviar", "Click aquí")? ¿Hay un solo CTA principal claro o compiten varios? |
-| Prueba social | ¿Hay testimonios, logos, cifras, reviews? ¿Son específicos (nombre, cargo, resultado) o genéricos? |
-| Manejo de objeciones | ¿La página anticipa dudas obvias (precio, tiempo, garantía, seguridad) o las ignora? |
+| Value proposition | Is it clear in under 5 seconds what's offered and for whom? Is it in the H1/hero or do you have to look for it? |
+| Message hierarchy | Does the copy follow a logical order (problem → solution → proof → action) or is it a flat list of features? |
+| CTA strength | Is the button text specific and benefit-oriented ("Start free") or generic ("Submit", "Click here")? Is there one clear main CTA or do several compete? |
+| Social proof | Are there testimonials, logos, figures, reviews? Are they specific (name, role, result) or generic? |
+| Objection handling | Does the page anticipate obvious doubts (price, time, guarantee, security) or ignore them? |
 
-## Bloque 2: UX y conversión
+## Block 2: UX & conversion
 
-| Sub-criterio | Qué evaluar |
+| Sub-criterion | What to evaluate |
 |---|---|
-| Fricción del CTA principal | Cantidad de campos del formulario, cantidad de clics hasta la conversión. Cada campo de más es fricción. |
-| Jerarquía visual | Basado en la estructura de headings y orden del HTML: ¿hay un flujo visual claro hacia el CTA, o todo compite por atención? |
-| Pasos hasta convertir | ¿Es de un paso (dejar el email) o multi-paso? ¿Está justificado por la complejidad de la oferta? |
-| Mobile-friendliness básico | ¿Tiene viewport meta tag? ¿El diseño es responsive por estructura (no se puede ver el render, pero sí inferir de la marca/framework y meta tags)? |
+| Main CTA friction | Number of form fields, number of clicks to conversion. Every extra field is friction. |
+| Visual hierarchy | Based on the heading structure and HTML order: is there a clear visual flow toward the CTA, or does everything compete for attention? |
+| Steps to convert | Is it one step (leave an email) or multi-step? Is that justified by the offer's complexity? |
+| Basic mobile-friendliness | Does it have a viewport meta tag? Is the design responsive by structure (the render can't be seen, but it can be inferred from the framework and meta tags)? |
 
-## Bloque 3: SEO on-page
+## Block 3: On-page SEO
 
-| Sub-criterio | Qué evaluar |
+| Sub-criterion | What to evaluate |
 |---|---|
-| Title tag | ¿Existe, es único, describe la página, tiene largo razonable (~50-60 caracteres)? |
-| Meta description | ¿Existe, es persuasiva, largo razonable (~150-160 caracteres)? |
-| H1 único | ¿Hay exactamente un H1? ¿Es coherente con el title? |
-| Alt text | ¿Las imágenes relevantes tienen alt text descriptivo? |
-| Señales de performance | Peso aproximado de la página, cantidad de requests si es detectable, uso de lazy loading. **Si hay datos de PageSpeed Insights disponibles, usar el `performance.score` real y citarlo en vez de estimar** (ver `references/pagespeed-integration.md`). |
-| Structured data | ¿Hay schema.org / JSON-LD? (Bonus, no crítico para una landing simple). |
-| Atributo `lang` | ¿El `<html lang="...">` coincide con el idioma real del contenido? Descuido común en templates/builders (Lovable, etc.) que quedan en inglés por defecto tras traducir el copy. Afecta accesibilidad (lectores de pantalla) y clasificación de idioma en buscadores. |
+| Title tag | Does it exist, is it unique, does it describe the page, is it a reasonable length (~50-60 characters)? |
+| Meta description | Does it exist, is it persuasive, reasonable length (~150-160 characters)? |
+| Single H1 | Is there exactly one H1? Is it consistent with the title? |
+| Alt text | Do relevant images have descriptive alt text? |
+| Performance signals | Approximate page weight, number of requests if detectable, use of lazy loading. **If PageSpeed Insights data is available, use the real `performance.score` and cite it instead of estimating** (see `references/pagespeed-integration.md`). |
+| Structured data | Is there schema.org / JSON-LD? (Bonus, not critical for a simple landing.) |
+| `lang` attribute | Does `<html lang="...">` match the content's real language? A common slip in templates/builders (Lovable, etc.) that stay in English by default after the copy is translated. Affects accessibility (screen readers) and language classification in search engines. |
 
-## Cálculo del puntaje
+## Score calculation
 
-1. Promedio simple de los sub-criterios de cada bloque → puntaje del bloque (/10).
-2. Promedio de los 3 bloques → puntaje global (/10).
-3. El puntaje global nunca reemplaza el detalle — siempre mostrar el desglose.
+1. Simple average of each block's sub-criteria → block score (/10).
+2. Average of the 3 blocks → overall score (/10).
+3. The overall score never replaces the detail — always show the breakdown.

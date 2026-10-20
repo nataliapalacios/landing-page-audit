@@ -1,141 +1,136 @@
-# Audit de Landing Page — Diffr (job-skill-forge.vercel.app)
+# Landing Page Audit — Diffr (job-skill-forge.vercel.app)
 
-**Puntaje global: 7.2/10**
+**Overall score: 7.2/10**
 
-⚠️ **Nota de alcance:** el fetch automático no trajo contenido (app 100% client-side rendered, sin
-SSR/prerender). El análisis final se hizo sobre un `.mhtml` (snapshot completo del DOM renderizado,
-guardado desde el navegador) que el usuario subió — esto sí capturó la página completa, no solo el
-above-the-fold. Sigue sin poder evaluarse el flujo post-CTA (formulario de registro), que queda
-fuera del alcance de una captura estática.
+⚠️ **Scope note:** the automatic fetch returned no content (100% client-side rendered app, no
+SSR/prerender). The final analysis was done on an `.mhtml` (full snapshot of the rendered DOM, saved
+from the browser) uploaded by the user — this did capture the whole page, not just above the fold.
+The post-CTA flow (sign-up form) still can't be evaluated; it's outside the reach of a static capture.
+The page is in Spanish: its copy is quoted in the original language.
 
-| Bloque | Puntaje |
+| Block | Score |
 |---|---|
-| Copywriting y persuasión | 8.0/10 |
-| UX y conversión | 8.0/10 (parcial — 2 de 4 criterios no evaluables sin el flujo de registro) |
-| SEO on-page | 5.6/10 |
+| Copywriting & persuasion | 8.0/10 |
+| UX & conversion | 8.0/10 (partial — 2 of 4 criteria not assessable without the sign-up flow) |
+| On-page SEO | 5.6/10 |
 
 ## Checklist
 
-### Copywriting y persuasión
-| Criterio | Puntaje | Hallazgo |
+### Copywriting & persuasion
+| Criterion | Score | Finding |
 |---|---|---|
-| Propuesta de valor | 8/10 | Clara en <5s: "Encuentra tu próximo trabajo con IA" + subheading que resume 4 beneficios. |
-| Jerarquía del mensaje | 9/10 | Hero → cifras de prueba social → "cómo funciona" en 4 pasos → comparación vs. método tradicional → CTA final. Refuerza la conversión en cada bloque en vez de gastar todo el argumento en el hero. |
-| Fuerza del CTA | 7/10 | "Explorar trabajos ahora" / "Empezar ahora" (repetido al final de la página) son accionables pero genéricos; ninguno promete un resultado específico. |
-| Prueba social | 7/10 | Barra de cifras justo debajo del hero: "12,500+ Trabajos · 3,400+ Colocaciones · 25 Universidades · 87% Match rate". Fuerte en números, pero sin nombres, logos de empresas ni una cita textual de un usuario real — sigue siendo prueba social "de marca", no testimonial. |
-| Manejo de objeciones | 9/10 | La tabla "Diffr vs. Búsqueda tradicional" (3-6 meses vs. 4-8 semanas, 2% vs. 15% respuesta, CV genérico vs. optimizado para ATS) es un manejo de objeciones fuerte y con datos, no solo afirmaciones. |
+| Value proposition | 8/10 | Clear in <5s: "Encuentra tu próximo trabajo con IA" (find your next job with AI) + a subheading summarizing 4 benefits. |
+| Message hierarchy | 9/10 | Hero → social-proof figures → 4-step "how it works" → comparison vs. the traditional method → final CTA. Reinforces conversion in every block instead of spending the whole argument in the hero. |
+| CTA strength | 7/10 | "Explorar trabajos ahora" / "Empezar ahora" (repeated at the end of the page) are actionable but generic; neither promises a specific outcome. |
+| Social proof | 7/10 | Figures bar right below the hero: "12,500+ Trabajos · 3,400+ Colocaciones · 25 Universidades · 87% Match rate". Strong on numbers, but no names, company logos or a verbatim quote from a real user — still "brand" social proof, not testimonial. |
+| Objection handling | 9/10 | The "Diffr vs. Búsqueda tradicional" table (3-6 months vs. 4-8 weeks, 2% vs. 15% response rate, generic CV vs. ATS-optimized) is strong, data-backed objection handling, not just claims. |
 
-### UX y conversión
-| Criterio | Puntaje | Hallazgo |
+### UX & conversion
+| Criterion | Score | Finding |
 |---|---|---|
-| Fricción del CTA principal | No evaluable | El formulario/flujo de "Registrarse" no está en este snapshot (probablemente una página o modal aparte). |
-| Jerarquía visual | 8/10 | Contraste y espaciado consistentes en toda la página; cada sección repite el patrón título → contenido → CTA sin saturar. |
-| Pasos hasta convertir | No evaluable | Requiere ver el flujo post-CTA. |
-| Mobile-friendliness básico | 8/10 | Viewport meta tag presente. Layout y espaciado sugieren diseño responsive; no se confirmó el render real en mobile. |
+| Main CTA friction | Not assessable | The "Registrarse" (sign up) form/flow isn't in this snapshot (probably a separate page or modal). |
+| Visual hierarchy | 8/10 | Consistent contrast and spacing across the page; each section repeats the title → content → CTA pattern without clutter. |
+| Steps to convert | Not assessable | Requires seeing the post-CTA flow. |
+| Basic mobile-friendliness | 8/10 | Viewport meta tag present. Layout and spacing suggest responsive design; the actual mobile render wasn't confirmed. |
 
-### SEO on-page
-| Criterio | Puntaje | Hallazgo |
+### On-page SEO
+| Criterion | Score | Finding |
 |---|---|---|
-| Title tag | 4/10 | Solo dice "Diffr" — sin keyword ni beneficio. Desaprovecha espacio de ranking. |
-| Meta description | 7/10 | Presente y con keywords relevantes ("ofertas reales", "match", "CV", "IA"), pero corta (~72 caracteres vs. ~155-160 disponibles). |
-| H1 único | 9/10 | Confirmado: un solo `<h1>` en todo el DOM ("Encuentra tu próximo trabajo con IA"), coherente con el title. |
-| Alt text | No aplica | Cero tags `<img>` en el DOM — la página usa iconos SVG/inline, no imágenes tradicionales. No es un defecto. |
-| Señales de performance | 6/10 | Según PageSpeed Insights (dato del usuario, mobile): 61/100 de Rendimiento. La llamada propia a la API pegó con rate-limit (429, cuota pública sin key) — dato tomado del reporte que ya había corrido el usuario. Confirma el diagnóstico cualitativo: rendimiento mediocre, consistente con ser una SPA sin prerender. |
-| Structured data | 2/10 | Confirmado: no hay JSON-LD en el `<head>` del DOM renderizado. Cero rich snippets posibles hoy. |
+| Title tag | 4/10 | Just says "Diffr" — no keyword or benefit. Wastes ranking real estate. |
+| Meta description | 7/10 | Present and with relevant keywords ("ofertas reales", "match", "CV", "IA"), but short (~72 characters vs. ~155-160 available). |
+| Single H1 | 9/10 | Confirmed: a single `<h1>` in the whole DOM ("Encuentra tu próximo trabajo con IA"), consistent with the title. |
+| Alt text | N/A | Zero `<img>` tags in the DOM — the page uses SVG/inline icons, not traditional images. Not a defect. |
+| Performance signals | 6/10 | According to PageSpeed Insights (user-provided, mobile): 61/100 Performance. The skill's own API call hit a rate limit (429, keyless public quota) — data taken from the report the user had already run. Confirms the qualitative diagnosis: mediocre performance, consistent with an SPA without prerendering. |
+| Structured data | 2/10 | Confirmed: no JSON-LD in the `<head>` of the rendered DOM. Zero possible rich snippets today. |
 
-**Hallazgo adicional (fuera de la rúbrica original, agregado a `scoring-criteria.md`):** el atributo
-`lang` del `<html>` está en `"en"` pero todo el contenido visible está en español. Esto afecta
-accesibilidad (lectores de pantalla pronuncian mal) y puede confundir a buscadores sobre el idioma
-real de la página. Falla técnica simple, corrección de minutos. *Impacto: Medio, esfuerzo: mínimo.*
+**Additional finding (outside the original rubric, added to `scoring-criteria.md`):** the `<html>`
+`lang` attribute is set to `"en"` but all visible content is in Spanish. This hurts accessibility
+(screen readers mispronounce) and can confuse search engines about the page's real language. Simple
+technical slip, a minutes-long fix. *Impact: Medium, effort: minimal.*
 
-## Reporte narrativo
+## Narrative report
 
-### Copywriting y persuasión
-La propuesta de valor está resuelta con claridad: "Encuentra tu próximo trabajo con IA" combinado
-con el subheading "Tu asistente inteligente para buscar empleo, mejorar tu CV, practicar
-entrevistas y cerrar brechas de habilidades" comunica en segundos qué hace el producto y para
-quién.
+### Copywriting & persuasion
+The value proposition is clearly solved: "Encuentra tu próximo trabajo con IA" combined with the
+subheading "Tu asistente inteligente para buscar empleo, mejorar tu CV, practicar entrevistas y
+cerrar brechas de habilidades" communicates in seconds what the product does and for whom.
 
-Con la página completa a la vista, la jerarquía del mensaje es más fuerte de lo que parecía desde
-el hero solo: después de la promesa viene una barra de cifras ("12,500+ Trabajos · 3,400+
-Colocaciones · 25 Universidades · 87% Match rate"), después el "cómo funciona" en 4 pasos, y
-después una tabla comparativa "Diffr vs. Búsqueda tradicional" que convierte objeciones en datos
-concretos (3-6 meses vs. 4-8 semanas buscando, 2% vs. 15% de tasa de respuesta, CV genérico vs.
-optimizado para ATS). Es una estructura de página de ventas clásica y bien ejecutada, no solo un
-hero bonito. *Impacto: ya está bien resuelto, no es una recomendación.*
+With the full page in view, the message hierarchy is stronger than it looked from the hero alone:
+after the promise comes a figures bar ("12,500+ Trabajos · 3,400+ Colocaciones · 25 Universidades ·
+87% Match rate"), then the 4-step "how it works", then a "Diffr vs. Búsqueda tradicional" comparison
+table that turns objections into concrete data (3-6 months vs. 4-8 weeks searching, 2% vs. 15%
+response rate, generic CV vs. ATS-optimized). It's a classic, well-executed sales-page structure, not
+just a pretty hero. *Impact: already well solved, not a recommendation.*
 
-La prueba social existe y es más fuerte de lo que el hero solo sugería, pero sigue siendo
-enteramente cuantitativa — cifras de la propia empresa, sin un nombre, logo de empresa empleadora,
-o cita textual de un usuario real que las respalde. Las cifras solas se pueden poner en duda; un
-testimonio con nombre y resultado específico ("Conseguí trabajo en 3 semanas — María, Data
-Analyst") las hace creíbles. *Impacto: Medio.*
+Social proof exists and is stronger than the hero alone suggested, but it's entirely quantitative —
+the company's own figures, with no name, employer logo, or verbatim quote from a real user backing
+them. Figures alone can be doubted; a testimonial with a name and a specific result ("I got a job in
+3 weeks — María, Data Analyst") makes them credible. *Impact: Medium.*
 
-Los CTAs ("Explorar trabajos ahora", "Empezar ahora" repetido al final) son accionables pero
-genéricos — ninguno está atado al beneficio específico que promete el H1. Algo como "Ver mis
-matches ahora" conectaría más directo con la promesa central. *Impacto: Bajo-Medio.*
+The CTAs ("Explorar trabajos ahora", "Empezar ahora" repeated at the end) are actionable but
+generic — neither is tied to the specific benefit the H1 promises. Something like "Ver mis matches
+ahora" (see my matches now) would connect more directly with the core promise. *Impact: Low-Medium.*
 
-### UX y conversión
-La jerarquía visual se mantiene consistente en toda la página, no solo en el hero: cada sección
-repite el patrón título → contenido de apoyo → refuerzo de CTA, con un CTA final ("Empezar ahora")
-que le da una segunda oportunidad de conversión a quien llegó hasta el final sin actuar antes —
-un patrón correcto para páginas con contenido largo.
+### UX & conversion
+The visual hierarchy stays consistent across the whole page, not just in the hero: each section
+repeats the title → supporting content → CTA reinforcement pattern, with a final CTA ("Empezar
+ahora") that gives a second conversion chance to whoever reached the end without acting — the right
+pattern for long-content pages.
 
-Sigue sin poder evaluarse la fricción real de conversión (cantidad de campos del formulario de
-"Registrarse", pasos hasta activar la cuenta), porque ese flujo vive fuera de esta página y no
-quedó capturado en el snapshot. *Recomendación: correr una segunda pasada específicamente sobre el
-flujo de registro — suele ser donde se pierde más conversión que en el contenido de la landing.*
+Real conversion friction (number of fields in the "Registrarse" form, steps to activate the account)
+still can't be evaluated, because that flow lives outside this page and wasn't captured in the
+snapshot. *Recommendation: run a second pass specifically on the sign-up flow — that's usually where
+more conversion is lost than in the landing's content.*
 
-### SEO on-page
-Este es el bloque más débil, y por una razón estructural más que de contenido: la página es una
-SPA 100% client-side rendered — el HTML que llega a un crawler que no ejecuta JavaScript
-(o lo ejecuta con presupuesto limitado, como pasa con parte del crawl budget de Google en sitios
-grandes, y con la mayoría de bots que no son Googlebot) está vacío salvo por los meta tags. Todo
-el copy, los headings y el contenido semántico existen solo después de que corre
-`index-DFJ6tuSG.js`. *Impacto: Alto.* La solución no es reescribir copy, es técnica: prerender o
-SSR (Next.js, Astro, o un servicio de prerendering como Prerender.io) para que el HTML inicial
-tenga el contenido real.
+### On-page SEO
+This is the weakest block, and for a structural rather than a content reason: the page is a 100%
+client-side rendered SPA — the HTML that reaches a crawler that doesn't execute JavaScript (or does
+so on a limited budget, as happens with part of Google's crawl budget on large sites, and with most
+non-Googlebot bots) is empty except for the meta tags. All the copy, headings and semantic content
+only exist after `index-DFJ6tuSG.js` runs. *Impact: High.* The fix isn't rewriting copy, it's
+technical: prerender or SSR (Next.js, Astro, or a prerendering service like Prerender.io) so the
+initial HTML carries the real content.
 
-El title tag ("Diffr") y la ausencia total de structured data son quick wins baratos: el title no
-usa nada del espacio disponible para keyword o beneficio, y no hay ni un `<script type="application/ld+json">`
-en el head, lo que deja fuera cualquier posibilidad de rich snippet (rating, FAQ, etc.) en
-resultados de búsqueda. *Impacto: Medio-Alto, esfuerzo bajo.*
+The title tag ("Diffr") and the total absence of structured data are cheap quick wins: the title uses
+none of the available space for a keyword or benefit, and there isn't a single
+`<script type="application/ld+json">` in the head, which rules out any rich snippet (rating, FAQ,
+etc.) in search results. *Impact: Medium-High, low effort.*
 
-La meta description sí está bien encaminada — tiene keywords relevantes y es persuasiva — pero
-usa menos de la mitad del espacio disponible en el snippet de Google. *Impacto: Bajo.*
+The meta description is on the right track — it has relevant keywords and is persuasive — but uses
+less than half the space available in Google's snippet. *Impact: Low.*
 
-Un hallazgo puntual confirmado en el DOM: `<html lang="en">` con contenido 100% en español. Es un
-descuido técnico típico de templates en inglés (este sitio corre sobre Lovable) que nadie ajustó
-al traducir el copy. *Impacto: Medio, esfuerzo: mínimo — es una línea de código.*
+One specific finding confirmed in the DOM: `<html lang="en">` with 100% Spanish content. It's a
+typical slip of English templates (this site runs on Lovable) that nobody adjusted when translating
+the copy. *Impact: Medium, effort: minimal — it's one line of code.*
 
 ## Top 3 quick wins
-1. **Prerender/SSR del contenido crítico.** Es el cambio de mayor impacto en SEO: hoy el sitio
-   es efectivamente invisible para cualquier crawler que no ejecute JS. Esfuerzo medio (requiere
-   trabajo técnico), pero es la base de todo lo demás en SEO.
-2. **Reescribir el title tag** de "Diffr" a algo como "Diffr — Buscá empleo con IA, mejorá tu CV
-   y practicá entrevistas". Esfuerzo mínimo, impacto directo en CTR de búsqueda.
-3. **Corregir `lang="en"` a `lang="es"`** y agregar structured data básico (Organization/WebSite).
-   Ambos son cambios de minutos con impacto directo en accesibilidad y SEO técnico.
+1. **Prerender/SSR the critical content.** The highest-impact SEO change: today the site is
+   effectively invisible to any crawler that doesn't execute JS. Medium effort (requires technical
+   work), but it's the foundation for everything else in SEO.
+2. **Rewrite the title tag** from "Diffr" to something like "Diffr — Busca empleo con IA, mejora tu
+   CV y practica entrevistas". Minimal effort, direct impact on search CTR.
+3. **Fix `lang="en"` to `lang="es"`** and add basic structured data (Organization/WebSite). Both are
+   minutes-long changes with direct impact on accessibility and technical SEO.
 
-## Datos técnicos (PageSpeed Insights)
+## Technical data (PageSpeed Insights)
 
-⚠️ Estos valores son del reporte que el usuario ya había corrido en pagespeed.web.dev — la
-llamada propia del skill a la API pegó con `429` (cuota pública saturada, sin API key configurada).
+⚠️ These values come from the report the user had already run on pagespeed.web.dev — the skill's
+own API call hit a `429` (public quota saturated, no API key configured).
 
-| Métrica | Puntaje (mobile) |
+| Metric | Score (mobile) |
 |---|---|
-| Rendimiento | 61/100 |
-| Accesibilidad | 90/100 |
-| Prácticas recomendadas | 100/100 |
+| Performance | 61/100 |
+| Accessibility | 90/100 |
+| Best practices | 100/100 |
 | SEO (Lighthouse) | 100/100 |
 
-**Datos de campo (usuarios reales):** no disponibles — normal en un sitio de bajo tráfico como
-este, en fase Beta.
+**Field data (real users):** not available — normal for a low-traffic site like this one, in Beta.
 
-*Nota de contradicción aparente:* Lighthouse da 100/100 en SEO propio, pero nuestra rúbrica
-puntuó 5.6/10 en el bloque SEO. No es un error — Lighthouse audita señales técnicas básicas
-(¿hay title? ¿hay meta description? ¿es crawleable?, todas presentes acá) y no evalúa la calidad
-del title/meta description ni la ausencia de structured data con el mismo nivel de detalle que
-nuestra rúbrica. Vale aclarar esto en cualquier reporte que combine ambas fuentes, para que no
-parezca que se contradicen sin explicación.
+*Note on an apparent contradiction:* Lighthouse gives 100/100 on its own SEO score, but our rubric
+scored 5.6/10 on the SEO block. It's not an error — Lighthouse audits basic technical signals (is
+there a title? a meta description? is it crawlable?, all present here) and doesn't evaluate the
+quality of the title/meta description or the absence of structured data with the same level of
+detail as our rubric. It's worth clarifying this in any report combining both sources, so they don't
+seem to contradict each other without explanation.
 
-*Corrido el 21 ago 2026, dato aportado por el usuario vía pagespeed.web.dev.*
+*Run on Aug 21 2026, data provided by the user via pagespeed.web.dev.*

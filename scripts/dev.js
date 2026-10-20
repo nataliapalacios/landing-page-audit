@@ -1,5 +1,5 @@
-// Servidor local mínimo que imita el ruteo de Vercel (index.html + /api/*), sin instalar la CLI.
-// Uso: npm run dev  (lee .env si existe)
+// Minimal local server mimicking Vercel's routing (index.html + /api/*), no CLI needed.
+// Usage: npm run dev  (reads .env if present)
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { Readable } from "node:stream";

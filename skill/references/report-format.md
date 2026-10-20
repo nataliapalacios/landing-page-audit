@@ -1,74 +1,75 @@
-# Formato del reporte final
+# Final report format
 
-Un solo archivo Markdown con esta estructura exacta.
+A single Markdown file with this exact structure.
 
 ```markdown
-# Audit de Landing Page — [nombre/URL]
+# Landing Page Audit — [name/URL]
 
-**Puntaje global: X.X/10**
+**Overall score: X.X/10**
 
-| Bloque | Puntaje |
+| Block | Score |
 |---|---|
-| Copywriting y persuasión | X/10 |
-| UX y conversión | X/10 |
-| SEO on-page | X/10 |
+| Copywriting & persuasion | X/10 |
+| UX & conversion | X/10 |
+| On-page SEO | X/10 |
 
 ## Checklist
 
-### Copywriting y persuasión
-| Criterio | Puntaje | Hallazgo |
+### Copywriting & persuasion
+| Criterion | Score | Finding |
 |---|---|---|
-| Propuesta de valor | X/10 | [una línea] |
-| Jerarquía del mensaje | X/10 | [una línea] |
-| Fuerza del CTA | X/10 | [una línea] |
-| Prueba social | X/10 | [una línea] |
-| Manejo de objeciones | X/10 | [una línea] |
+| Value proposition | X/10 | [one line] |
+| Message hierarchy | X/10 | [one line] |
+| CTA strength | X/10 | [one line] |
+| Social proof | X/10 | [one line] |
+| Objection handling | X/10 | [one line] |
 
-### UX y conversión
-[misma estructura de tabla]
+### UX & conversion
+[same table structure]
 
-### SEO on-page
-[misma estructura de tabla]
+### On-page SEO
+[same table structure]
 
-## Reporte narrativo
+## Narrative report
 
-### Copywriting y persuasión
-[2-4 párrafos, citando copy real de la página entre comillas, con recomendaciones marcadas
-como Impacto: Alto/Medio/Bajo]
+### Copywriting & persuasion
+[2-4 paragraphs, quoting the page's real copy in quotation marks, with recommendations marked
+as Impact: High/Medium/Low]
 
-### UX y conversión
-[ídem]
+### UX & conversion
+[same]
 
-### SEO on-page
-[ídem]
+### On-page SEO
+[same]
 
 ## Top 3 quick wins
-1. [cambio de mayor impacto / menor esfuerzo]
+1. [highest impact / lowest effort change]
 2. [...]
 3. [...]
 
-## Datos técnicos (PageSpeed Insights)
+## Technical data (PageSpeed Insights)
 
-*Sección opcional — incluir solo si la API respondió. Si no, omitir esta sección entera, no
-dejarla con placeholders vacíos.*
+*Optional section — include it only if the API responded. Otherwise omit the whole section, don't
+leave it with empty placeholders.*
 
-| Métrica | Puntaje (mobile) |
+| Metric | Score (mobile) |
 |---|---|
-| Rendimiento | X/100 |
-| Accesibilidad | X/100 |
-| Prácticas recomendadas | X/100 |
+| Performance | X/100 |
+| Accessibility | X/100 |
+| Best practices | X/100 |
 | SEO (Lighthouse) | X/100 |
 
-**Core Web Vitals (datos de laboratorio):** LCP [valor], CLS [valor], TBT [valor].
+**Core Web Vitals (lab data):** LCP [value], CLS [value], TBT [value].
 
-**Datos de campo (usuarios reales):** [presente / no disponible — normal en sitios de bajo tráfico].
+**Field data (real users):** [present / not available — normal for low-traffic sites].
 
-*Corrido el [fecha] vía PageSpeed Insights API.*
+*Run on [date] via the PageSpeed Insights API.*
 ```
 
-Reglas del reporte:
-- Cada hallazgo debe poder trazarse a algo concreto de la página (una cita, un dato estructural),
-  nunca una opinión sin evidencia.
-- Las recomendaciones son accionables: no "mejorar el copy", sino qué cambiar y por qué.
-- El tono es directo y analítico, sin relleno ni elogios vacíos — consistente con la voz de marca
-  del usuario.
+Report rules:
+- Every finding must be traceable to something concrete on the page (a quote, a structural fact),
+  never an opinion without evidence.
+- Recommendations are actionable: not "improve the copy", but what to change and why.
+- The tone is direct and analytical, with no filler or empty praise.
+- Section headings and labels are written in the report's language (translate this template's
+  headings when the report is not in English).

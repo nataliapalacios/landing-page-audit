@@ -2,7 +2,7 @@
   "name": "landing-page-audit",
   "version": "1.0.0",
   "private": true,
-  "description": "Audita una landing page (copy, UX/conversión, SEO on-page + PageSpeed) con Claude. Deploy en Vercel.",
+  "description": "Audit any landing page (copy, UX/conversion, on-page SEO + PageSpeed) with Claude. Deploys on Vercel.",
   "type": "module",
   "license": "MIT",
   "engines": {
