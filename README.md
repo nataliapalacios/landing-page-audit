@@ -49,7 +49,9 @@ Resultado: **~US$0.04–0.06 por audit**. Para máxima calidad: `CLAUDE_MODEL=cl
 La app está pensada para que cualquiera la pruebe sin registrarse:
 
 - **Botón "Ver un reporte de ejemplo"**: muestra la auditoría real de Diffr al instante, sin costo.
-- **Límite por IP** (`RATE_LIMIT_PER_DAY`, default 5/día): frena el abuso casual.
+- **Límite por IP** (`RATE_LIMIT_PER_MONTH`, default 3/mes). El contador vive en Upstash Redis
+  (plan gratis, se conecta en un clic desde el Marketplace de Vercel). Sin Redis queda en memoria y
+  se reinicia con cada cold start, así que en la práctica no limita.
 - **Tope duro de gasto**: en [console.anthropic.com](https://console.anthropic.com) → Settings →
   Limits, fijá un *spend limit* mensual (ej. US$10 ≈ 200 audits). Mejor aún: creá un workspace
   aparte solo para esta demo y usá una API key de ese workspace. Si se alcanza el tope, la app

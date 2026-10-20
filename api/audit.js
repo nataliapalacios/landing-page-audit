@@ -9,7 +9,7 @@ const MODEL = process.env.CLAUDE_MODEL || "claude-sonnet-5-5";
 const EFFORT = process.env.CLAUDE_EFFORT || "low";
 
 export async function POST(request) {
-  const denied = checkAccess(request) || rateLimit(request);
+  const denied = checkAccess(request);
   if (denied) return denied;
   if (!process.env.ANTHROPIC_API_KEY) {
     return json({ error: "config", message: "Falta ANTHROPIC_API_KEY en las variables de entorno." }, 500);
@@ -17,6 +17,10 @@ export async function POST(request) {
 
   const body = await request.json().catch(() => ({}));
   if (!body.page?.url) return json({ error: "bad_request", message: "Falta el contenido extraído de la página." }, 400);
+
+  // Se cuenta recién acá, para que los errores de config o de input no consuman cupo.
+  const limited = await rateLimit(request);
+  if (limited) return limited;
 
   const input = {
     auditDate: new Date().toISOString().slice(0, 10),
